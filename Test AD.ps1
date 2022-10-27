@@ -1,20 +1,21 @@
+#Push all code into a function so we can use recursion
 $commands = {
 
-    $username = Read-Host 'Nhap username cua user can kiem tra '
-    $securepwd = Read-Host 'Nhap password cua user can kiem tra ' -AsSecureString
-    $plainpwd =[Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($securepwd))
+    $username = Read-Host 'Username'
+    $securepwd = Read-Host 'Password' -AsSecureString #Hide password
+    $plainpwd =[Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($securepwd)) #Make secure string readable
     $currentdomain = "LDAP://" + ([ADSI]"").distinguishedName
     $domain = New-Object System.DirectoryServices.DirectoryEntry($currentdomain,$username,$plainpwd)
     if ($domain.name -eq $null)
     {
-        Write-Host "Xac thuc that bai, vui long kiem tra lai username/password"
-        &$commands
+        Write-Host "Incorrect user name or password or account is temporarily locked, please contact your system administrator."
+        &$commands #Recursion
     }
     else 
     {
-        Write-Host "Xac thuc thanh cong tren domain" $domain.name
-        &$commands
+        Write-Host "Authentication success on domain " $domain.name
+        &$commands #Another recursion
     }
 
 }
-&$commands
+&$commands #Run main function
